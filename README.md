@@ -13,10 +13,9 @@ the licence is `apps/api/LICENSE.md`).
 ## Live deployment
 
 <!-- 02-docs:begin -->
-Not recorded yet. The bootstrap's last phase writes the live URLs, the
-workspace and the secrets the app uses into
-[ai/context/deployment.md](ai/context/deployment.md); how the app deploys
-and how to operate it is in
+This app is **live**. Verified URLs, identity and the secrets it uses are
+recorded in [ai/context/deployment.md](ai/context/deployment.md) (re-rendered
+by the `02-docs` phase); how it deploys and how to operate it:
 [ai/context/operations.md](ai/context/operations.md).
 <!-- 02-docs:end -->
 
