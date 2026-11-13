@@ -1,0 +1,52 @@
+// The Worker binds nothing, so this file is committed as-is (no wiring
+// template). Orun deploys with `--env stage` / `--env prod`; wrangler names
+// the Worker fastify-api-api-<env> from the top-level name. Each environment's
+// ENVIRONMENT var is what GET /health reports.
+//
+// How the Fastify app runs here:
+// - nodejs_compat with a compatibility date after 2025-09-01 gives the Worker
+//   node:http's server half (src/worker.ts hands requests to the server
+//   fastify.listen starts) and the vars in process.env. A date after
+//   2025-06-01 also lets the Worker generate code while it starts up, which
+//   Fastify's router does once, at boot (allow_eval_during_startup).
+// - `alias` points `pino`, Fastify's logger, at its Node build. pino's
+//   package.json names a `browser` build, which wrangler's bundler prefers;
+//   that build has no `pino.symbols`, and Fastify's logger refuses to load
+//   without them. The Node build writes its JSON lines to stdout, which is the
+//   Worker's log. pino is a direct dependency, at the version Fastify resolves,
+//   so this path exists under pnpm.
+// - No static assets: the home page is the HTML the route returns, and its
+//   logo is Fastify's own, from fastify.dev.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fastify-api-api",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "alias": {
+    "pino": "./node_modules/pino/pino.js"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "ENVIRONMENT": "local"
+  },
+  "env": {
+    "dev": {
+      "vars": {
+        "ENVIRONMENT": "dev"
+      }
+    },
+    "stage": {
+      "vars": {
+        "ENVIRONMENT": "stage"
+      }
+    },
+    "prod": {
+      "vars": {
+        "ENVIRONMENT": "prod"
+      }
+    }
+  }
+}
